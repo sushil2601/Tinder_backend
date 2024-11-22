@@ -4,27 +4,12 @@ const app = express()
 const connectDB = require('./config/database')
 const User = require('./models/user');
 const { after } = require('node:test');
+const { error } = require('console');
 
 app.use(express.json())
 
 //signup
 app.post('/signup',async(req,res)=>{
-
-    // const userObj = {
-    //     firstName : 'Sushil',
-    //     lastName : 'Suman',
-    //     emailId : 'sushi12@gmail.com',
-    //     password : 'Suman@123'
-    // }
-
-    // const user = new User(userObj);
-
-    // const user = new User({
-    //     firstName : 'Nibha',
-    //     lastName : 'Yadav',
-    //     emailId : 'nibha123@gmail.com',
-    //     password : 'Nibha@123'
-    // })
 
     const user = new User(req.body)
 
@@ -88,12 +73,24 @@ app.delete('/deleteUser',async(req,res)=>{
 
 //update user
 
-app.patch('/updateUser',async(req,res)=>{
+app.patch('/updateUser/:userId',async(req,res)=>{
     try{
 
-        const userId = req.body.userId;
+        const userId = req.params?.userId;
         const emailId = req.body.emailId;
         const data = req.body;
+
+        const ALLOWED_UPDATE = ["photo_url","about","gender","skills","age"]
+
+        const isAllowedUpdate = Object.keys(data).every((k)=>ALLOWED_UPDATE.includes(k))
+
+        if(!isAllowedUpdate){
+            throw new Error('Update not allowed')
+        }
+
+        if(data?.skills.length > 10){
+            throw new Error('Skills cannot be more than 10')
+        }
 
         const user = await User.findByIdAndUpdate({_id : userId},data)
         const userByEmail = await User.findOneAndUpdate(
@@ -107,7 +104,7 @@ app.patch('/updateUser',async(req,res)=>{
         res.send('User is updated successfully')
     }
     catch(err){
-        res.status(500).send('Something went wrong')
+        res.status(500).send('Update failed : '+ err.message)
     }
 })
 
@@ -136,61 +133,3 @@ connectDB()
 
 
 
-// const {adminAuth,userAuth} = require('./middleware/auth');
-
-// app.use('/admin',adminAuth);
-// // app.use('/user',userAuth)
-
-// app.get('/admin/getAllData',(req,res)=>{
-//     res.send('send all data')
-// })
-
-// app.post('/user/login',(req,res)=>{
-//     res.send('User is logged In successfully')
-// })
-
-// app.get('/user/getUserData',userAuth,(req,res)=>{
-//     res.send('User data is fetched successfully')
-// })
-
-// app.get('/admin/delete',(req,res)=>{
-//     res.send('delete all data')
-// })
-
-// app.get('/getUserData',(req,res)=>{
-
-//     try{
-//         throw new Error('jrvr')
-//         res.send('Data is send')
-//     }
-//     catch(err){
-//         res.status(500).send('Something went wrong')
-//     }
-
-    
-// })
-
-// app.use('/',(err,req,res,next)=>{
-//     if(err){
-//         res.status(500).send('Something went wrong')
-//     }
-// })
-
-// app.use('/',(req,res,next)=>{
-//     console.log('Namaste node')
-//     next()
-//     // res.send('Namaste Node 1')
-// },
-
-// (req,res,next)=>{
-//     console.log('Namaste node 2');
-//     // res.send('Node 2')
-//     next()
-// }
-
-
-// )
-
-// app.use('/test',(req,res)=>{
-//     console.log('Hello World!')
-// })
