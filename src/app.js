@@ -3,6 +3,7 @@ const express = require('express')
 const app = express()
 const connectDB = require('./config/database')
 const User = require('./models/user');
+const { after } = require('node:test');
 
 app.use(express.json())
 
@@ -95,7 +96,13 @@ app.patch('/updateUser',async(req,res)=>{
         const data = req.body;
 
         const user = await User.findByIdAndUpdate({_id : userId},data)
-        const userByEmail = await User.findOneAndUpdate({emailId : emailId},data)
+        const userByEmail = await User.findOneAndUpdate(
+            {emailId : emailId},
+            data,
+            {returnDocument : after},
+            {runValidator : true},
+
+        )
 
         res.send('User is updated successfully')
     }
