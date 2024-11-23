@@ -7,7 +7,7 @@ const bcrypt  = require('bcrypt');
 
 const connectDB = require('./config/database')
 const User = require('./models/user');
-const validateSignUpData = require('./utils/validation');
+const {validateSignUpData} = require('./utils/validation');
 
 
 app.use(express.json())
@@ -44,7 +44,7 @@ app.post('/signup',async(req,res)=>{
     }
 })
 
-app.post('/login',async()=>{
+app.post('/login',async(req,res)=>{
 
     try{
         const {emailId,password} = req.body;
