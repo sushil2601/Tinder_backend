@@ -16,7 +16,7 @@ app.use(express.json())
 app.post('/signup',async(req,res)=>{
     try{
         //validating data
-        validateSignUpData(req)
+        validateSignUpData(req);
 
         const{
             firstName,
@@ -38,6 +38,31 @@ app.post('/signup',async(req,res)=>{
    
         await user.save();
         res.send('User details is added successfully')
+    }
+    catch(err){
+        res.status(500).send('ERROR : ' + err.message);
+    }
+})
+
+app.post('/login',async()=>{
+
+    try{
+        const {emailId,password} = req.body;
+
+        const user = await User.findOne({emailId : emailId});
+
+        if(!user){
+            throw new Error('User is not present');
+        }
+
+        const isPasswordValid = await bcrypt.compare(password,user.password);
+
+        if(isPasswordValid){
+            res.send('Login Successfully !!!')
+        }
+        else{
+            throw new Error('Invalid credentials')
+        }
     }
     catch(err){
         res.status(500).send('ERROR : ' + err.message);
