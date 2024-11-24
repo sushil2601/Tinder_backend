@@ -4,6 +4,8 @@ const app = express()
 const { after } = require('node:test');
 const { error } = require('console');
 const bcrypt  = require('bcrypt');
+const coockiParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 
 const connectDB = require('./config/database')
 const User = require('./models/user');
@@ -11,6 +13,7 @@ const {validateSignUpData} = require('./utils/validation');
 
 
 app.use(express.json())
+app.use(coockiParser());
 
 //signup
 app.post('/signup',async(req,res)=>{
@@ -58,11 +61,46 @@ app.post('/login',async(req,res)=>{
         const isPasswordValid = await bcrypt.compare(password,user.password);
 
         if(isPasswordValid){
+
+            const token  = jwt.sign({_id : user._id},"Nibha@Tinder")
+
+            res.cookie('token', token);
+
             res.send('Login Successfully !!!')
         }
         else{
             throw new Error('Invalid credentials')
         }
+    }
+    catch(err){
+        res.status(500).send('ERROR : ' + err.message);
+    }
+})
+
+app.get('/profile',async(req,res)=>{
+
+    try{
+
+        const cookies = req.cookies;
+
+        const {token} = cookies;
+
+        if(!token){
+            throw new Error('Invalid token')
+        }
+        
+        const decodedMessage = await jwt.verify(token,'Nibha@Tinder')
+
+        const {_id} = decodedMessage;
+        
+        const user = await User.findById(_id);
+
+        if(!user){
+            throw new Error('User does not exit')
+        }
+       
+        res.send(user);
+
     }
     catch(err){
         res.status(500).send('ERROR : ' + err.message);
