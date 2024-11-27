@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 
 const connectionRequestSchema = new mongoose.Schema({
 
-    fromUser : {
+    fromUserId : {
         type : mongoose.Schema.Types.ObjectId,
         required : true,
     },
 
-    toUser : {
+    toUserId : {
         type : mongoose.Schema.Types.ObjectId,
         required : true,
     },
@@ -16,18 +16,18 @@ const connectionRequestSchema = new mongoose.Schema({
     status : {
         type : String,
         enum : ['interested','ignored','accepted','rejected'],
-        values : `{VALUE} is incoreect status type`
+        message : `{VALUE} is incoreect status type`
     },
 },
 {timeStamps: true}
 );
 
-connectionRequestSchema.index({fromUser : 1},{toUser : 1})
+connectionRequestSchema.index({fromUserId : 1},{toUserId : 1})
 
 connectionRequestSchema.pre('save',function(next){
     const connectionRequest = this;
 
-    if(connectionRequest.fromUser.equals(connectionRequest.toUser)){
+    if(connectionRequest.fromUserId.equals(connectionRequest.toUserId)){
         throw new Error('You cannot send request to youself')
     }
 
