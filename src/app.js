@@ -35,7 +35,38 @@ connectDB()
 
 
 
+/*
+app.use('/',(req,res)=>{
+    
+    console.log('Hello World')
 
+    })
+
+    app.use('/hello',(req,res)=>{
+        
+        console.log('wjefjrw')
+        
+        })
+
+    app.use('/test',(req,res)=>{
+        
+        console.log('wjhfvdv')
+        
+        })
+
+    app.use('/hello/2',(req,res)=>{
+        
+        console.log('srg')
+        
+        })
+
+    app.use('/hello123',(req,res)=>{
+        
+        console.log('wjgh')
+
+        })
+
+*/
 
 
 

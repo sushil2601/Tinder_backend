@@ -5,8 +5,8 @@ const ConnectionRequest = require('../models/connectionRequest');
 const userRouter = express.Router();
 
 const USER_DATA = "firstName lastName";
-//get all pending request
 
+//get all pending request
 userRouter.get('/user/requests/received',userAuth,async(req,res)=>{
 
     try{
@@ -28,6 +28,7 @@ userRouter.get('/user/requests/received',userAuth,async(req,res)=>{
     }
 })
 
+//get connection
 userRouter.get('/user/connection',userAuth,async(req,res)=>{
     try{
 
@@ -58,6 +59,52 @@ userRouter.get('/user/connection',userAuth,async(req,res)=>{
     catch(err){
         res.status(400).json({
             message : err.message,
+        })
+    }
+})
+
+//feed API
+userRouter.get('/feed',userAuth,async(req,res)=>{
+    try{
+
+        const loggedIn = req.user;
+        const page = parseInt(req.query.page) || 1;
+        let limit = parseInt(req.query.limit) || 10;
+        limit = limit > 50 ? 50 : limit;
+        const skip = (skip-1)*limit;
+
+
+        const connectionRequest = await ConnectionRequest.find({
+            $or : [
+                {fromUserId : loggedIn._id},
+                {toUserId : loggedIn._id},
+            ]
+    }).select('fromUserId toUserId')
+
+        const hideUserFromFeed = new Set();
+        connectionRequest.forEach((req)=>{
+            hideUserFromFeed.add(req.fromUserId.toString());
+            hideUserFromFeed.add(req.toUserId.toString());
+        })
+
+        const user = await User.find({
+            $and : [
+                {_id : {$nin : Array.from(hideUserFromFeed)}},
+                {_id : {$ne : loggedIn._id}},
+            ]
+        })
+        .select(USER_DATA)
+        .skip(skip)
+        .limit(limit);
+
+        res.json({
+            data : user,
+        })
+        
+    }
+    catch(err){
+        res.status(400).json({
+            ERROR : err.message,
         })
     }
 })
