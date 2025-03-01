@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
+require('dotenv').config()
+
 const userAuth = async(req,res,next)=>{
 
     try{
@@ -15,7 +17,7 @@ const userAuth = async(req,res,next)=>{
             return res.status(401).send('Please Login!!! ')
         }
 
-        const decodedData = await jwt.verify(token,'Nibha@Tinder')
+        const decodedData = await jwt.verify(token,process.env.JWT_SECRET)
 
         const {_id} = decodedData;
 

@@ -4,7 +4,7 @@ require('dotenv').config()
 
 const connectDB = async(req,res)=>{
     await mongoose.connect(
-       process.env.URL 
+       process.env.DB_URL 
     )
 }
 
