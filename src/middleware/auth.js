@@ -6,9 +6,9 @@ require('dotenv').config()
 const userAuth = async(req,res,next)=>{
 
     try{
-        const token = req.cookies.token;
+        // const token = req.cookies.token;
 
-        //const {token} = req.cookies;
+        const {token} = req.cookies;
 
         console.log('Token :-',token)
 
