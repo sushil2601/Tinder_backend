@@ -10,6 +10,9 @@ const requestRouter = require('./routes/requests');
 const userRouter = require('./routes/user');
 const paymentRouter = require('./routes/payment');
 const cors = require('cors')
+const http = require('http');
+const initializeSocket = require('./utils/socket');
+const chatRouter = require('./routes/chat');
 
 app.use(
     cors(
@@ -26,12 +29,18 @@ app.use('/',profileRouter);
 app.use('/',requestRouter);
 app.use('/',userRouter)
 app.use('/',paymentRouter);
+app.use('/',chatRouter);
+
+const server = http.createServer(app)
+initializeSocket(server);
 
 
 connectDB()
 .then(()=>{
     console.log('Databse connection established successfully...')
-    app.listen(3000,()=>{
+
+    //replacing the app to server to establish the socket connection
+    server.listen(3000,()=>{
         console.log('App is running on the port 3000...')
     })
 })
