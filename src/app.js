@@ -32,7 +32,7 @@ app.use('/',paymentRouter);
 app.use('/',chatRouter);
 
 const server = http.createServer(app)
-initializeSocket(server);
+initializeSocket(server);1
 
 
 connectDB()
