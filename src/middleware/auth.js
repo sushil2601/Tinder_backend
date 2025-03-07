@@ -10,7 +10,7 @@ const userAuth = async(req,res,next)=>{
 
         const {token} = req.cookies;
 
-        console.log('Token :-',token)
+        // console.log('Token :-',token)
 
         if(!token){
             // throw new Error('Token is not valid!!!!')
@@ -28,7 +28,6 @@ const userAuth = async(req,res,next)=>{
         }
 
         req.user = user;
-        console.log('user', req.user)
 
         next();
     }
